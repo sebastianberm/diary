@@ -39,6 +39,7 @@
                                         </div>
                                         <p class="text-xs text-gray-400 mt-1">Managed by environment variable.</p>
                                     @else
+                                        @if($setting->type === 'boolean')
                                             <div class="flex items-center">
                                                 <input type="checkbox"
                                                     wire:model="settings.{{ $loop->parent->index * 100 + $index }}.value"
@@ -48,8 +49,7 @@
                                                     class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ $setting->value ? 'Enabled' : 'Disabled' }}</span>
                                             </div>
                                         @elseif($setting->type === 'number')
-                                            <input type="number"
-                                                wire:model="settings.{{ $loop->parent->index * 100 + $index }}.value"
+                                            <input type="number" wire:model="settings.{{ $loop->parent->index * 100 + $index }}.value"
                                                 class="w-full rounded-md border-gray-300 dark:border-primary-600 bg-white dark:bg-primary-700 text-gray-700 dark:text-gray-200 focus:border-gold-500 focus:ring-gold-500 shadow-sm">
                                         @else
                                             <input type="{{ $setting->type === 'password' ? 'password' : 'text' }}"
