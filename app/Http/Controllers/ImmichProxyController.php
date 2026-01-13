@@ -14,7 +14,8 @@ class ImmichProxyController extends Controller
         $key = SystemConfig::get('immich_key');
 
         if (!$url || !$key) {
-            abort(404);
+            \Illuminate\Support\Facades\Log::error('Immich Proxy: Missing Configuration', ['url' => $url, 'key_exists' => !empty($key)]);
+            return response('Immich Proxy Error: Missing Configuration', 404);
         }
 
         $endpoint = rtrim($url, '/') . "/api/asset/thumbnail/{$id}?format=WEBP";
@@ -32,7 +33,8 @@ class ImmichProxyController extends Controller
             ]);
 
         if ($response->failed()) {
-            abort($response->status());
+            \Illuminate\Support\Facades\Log::error("Immich Proxy: Upstream Error {$response->status()}", ['endpoint' => $endpoint]);
+            return response("Immich Proxy: Upstream Error {$response->status()} from {$endpoint}", $response->status());
         }
 
         return response()->stream(function () use ($response) {
