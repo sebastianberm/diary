@@ -96,8 +96,8 @@ class ImmichService
         if (!$this->url || !$this->key)
             return null;
 
-        // Use the original file endpoint or preview endpoint
-        $endpoint = rtrim($this->url, '/') . "/api/asset/file/{$id}";
+        // Use the new API structure for original file
+        $endpoint = rtrim($this->url, '/') . "/api/assets/{$id}/original";
 
         try {
             $response = Http::withHeaders(['x-api-key' => $this->key])

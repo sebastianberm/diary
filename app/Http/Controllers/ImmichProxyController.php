@@ -18,11 +18,14 @@ class ImmichProxyController extends Controller
             return response('Immich Proxy Error: Missing Configuration', 404);
         }
 
-        $endpoint = rtrim($url, '/') . "/api/asset/thumbnail/{$id}?format=WEBP";
+        // New Immich API structure (v1.106+)
+        // Thumbnail: /api/assets/{id}/thumbnail?format=WEBP
+        $endpoint = rtrim($url, '/') . "/api/assets/{$id}/thumbnail?format=WEBP";
 
         if ($type === 'preview' || $type === 'original') {
-            // Preview/Original endpoint
-            $endpoint = rtrim($url, '/') . "/api/asset/file/{$id}?isWeb=true";
+            // Original/Preview: /api/assets/{id}/original
+            // Or /api/assets/{id}/image for specific size, but original is safest for now
+            $endpoint = rtrim($url, '/') . "/api/assets/{id}/original";
         }
 
         // Stream the response
