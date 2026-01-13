@@ -43,12 +43,12 @@ class ImmichService
             // V1 Search API (Common in newer Immich versions)
             $response = Http::withHeaders(['x-api-key' => $this->key])
                 ->post(rtrim($this->url, '/') . '/api/search/metadata', [
-                    'takenAfter' => $start,
-                    'takenBefore' => $end,
-                    'withExif' => false,
-                    'isVisible' => true,
-                    'type' => 'IMAGE', // Ensure we get images (or videos if desired)
-                ]);
+                        'takenAfter' => $start,
+                        'takenBefore' => $end,
+                        'withExif' => false,
+                        'isVisible' => true,
+                        'type' => 'IMAGE', // Ensure we get images (or videos if desired)
+                    ]);
 
             if ($response->successful()) {
                 $assets = $response->json()['assets']['items'] ?? [];
@@ -75,14 +75,14 @@ class ImmichService
 
     public function getAssetThumbnailUrl($id)
     {
-        // /api/asset/thumbnail/:id?format=WEBP
-        return rtrim($this->url, '/') . "/api/asset/thumbnail/{$id}?format=WEBP";
+        // Use local proxy to avoid ORB/CORS issues and handle auth
+        return route('immich.asset', ['id' => $id, 'type' => 'thumbnail']);
     }
 
     public function getAssetPreviewUrl($id)
     {
-        // /api/asset/file/:id?isWeb=true
-        return rtrim($this->url, '/') . "/api/asset/file/{$id}?isWeb=true";
+        // Use local proxy
+        return route('immich.asset', ['id' => $id, 'type' => 'preview']);
     }
 
     /**

@@ -21,6 +21,10 @@ Route::get('/settings', function () {
 
 Route::get('/export', \App\Livewire\ExportManager::class)->middleware(['auth', 'verified'])->name('export');
 
+Route::get('/immich/asset/{id}/{type?}', [\App\Http\Controllers\ImmichProxyController::class, 'show'])
+    ->middleware(['auth', 'verified'])
+    ->name('immich.asset');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
