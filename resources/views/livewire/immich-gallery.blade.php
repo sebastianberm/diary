@@ -16,9 +16,7 @@
                     <svg wire:loading.class="animate-spin" class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 4v5h.051M20.418 10c.112-1 .012-1 0 0-0 0m-4.018 3H16M4 14.5v5h.051M3.562 14c.112 1 .012 1 0 0-0 0m4.018-3H8">
-                        </path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h5M20 20v-5h-5">
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
                         </path>
                     </svg>
                     Refresh
@@ -46,7 +44,7 @@
                 @foreach($assets as $asset)
                     <div wire:click="toggleAsset('{{ $asset['id'] }}')"
                         class="relative group cursor-pointer aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 
-                                                 {{ isset($selectedAssets[$asset['id']]) ? 'border-gold-500 ring-2 ring-gold-200 dark:ring-primary-700' : 'border-transparent hover:border-gray-300 dark:hover:border-primary-600' }}">
+                                                             {{ isset($selectedAssets[$asset['id']]) ? 'border-gold-500 ring-2 ring-gold-200 dark:ring-primary-700' : 'border-transparent hover:border-gray-300 dark:hover:border-primary-600' }}">
 
                         <div class="relative w-full h-full">
                             <img src="{{ $asset['thumbUrl'] }}"
