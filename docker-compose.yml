@@ -1,0 +1,107 @@
+services:
+    app:
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
+            args:
+                user: laravel
+                uid: 1000
+        image: diary-app
+        container_name: diary-app
+        restart: unless-stopped
+        working_dir: /var/www
+        volumes:
+            - ./:/var/www
+        networks:
+            - diary-network
+        depends_on:
+            - db
+            - redis
+
+    scheduler:
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
+            args:
+                user: laravel
+                uid: 1000
+        image: diary-app
+        container_name: diary-scheduler
+        restart: unless-stopped
+        working_dir: /var/www
+        command: php artisan schedule:work
+        volumes:
+            - ./:/var/www
+        networks:
+            - diary-network
+        depends_on:
+            - app
+            - db
+            - redis
+
+    worker:
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
+            args:
+                user: laravel
+                uid: 1000
+        image: diary-app
+        container_name: diary-worker
+        restart: unless-stopped
+        working_dir: /var/www
+        command: php artisan queue:work
+        volumes:
+            - ./:/var/www
+        networks:
+            - diary-network
+        depends_on:
+            - app
+            - db
+            - redis
+
+    web:
+        image: nginx:alpine
+        container_name: diary-web
+        restart: unless-stopped
+        ports:
+            - "8000:80"
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx/conf.d:/etc/nginx/conf.d
+        networks:
+            - diary-network
+        depends_on:
+            - app
+
+    db:
+        image: mysql:8.0
+        container_name: diary-db
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_USER: ${DB_USERNAME}
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        volumes:
+            - dbdata:/var/lib/mysql
+        networks:
+            - diary-network
+        ports:
+            - "33061:3306" # Mapped to 33061 to avoid conflicts with local MySQL
+
+    redis:
+        image: redis:alpine
+        container_name: diary-redis
+        restart: unless-stopped
+        networks:
+            - diary-network
+
+networks:
+    diary-network:
+        driver: bridge
+
+volumes:
+    dbdata:
