@@ -24,50 +24,60 @@
                 init() {
                     const _this = this;
 
-                    this.editor = new Editor({
-                        element: this.$refs.editor,
-                        extensions: [
-                            StarterKit,
-                            Placeholder.configure({
-                                placeholder: 'Dear Diary, today was...',
-                            }),
-                            Highlight.configure({ multipart: true }),
-                        ],
-                        content: this.content,
-                        editorProps: {
-                            attributes: {
-                                class: 'outline-none h-full',
+                    try {
+                        this.editor = new Editor({
+                            element: this.$refs.editor,
+                            extensions: [
+                                StarterKit,
+                                Placeholder.configure({
+                                    placeholder: 'Dear Diary, today was...',
+                                }),
+                                Highlight.configure({ multipart: true }),
+                            ],
+                            content: this.content,
+                            editorProps: {
+                                attributes: {
+                                    class: 'outline-none h-full',
+                                },
                             },
-                        },
-                        onUpdate({ editor, transaction }) {
-                            // Prevent infinite loops from programmatic updates (like highlighting)
-                            if (transaction.getMeta('isHighlightUpdate')) return;
+                            onUpdate({ editor, transaction }) {
+                                // Prevent infinite loops from programmatic updates (like highlighting)
+                                if (transaction.getMeta('isHighlightUpdate')) return;
 
-                            _this.content = editor.getHTML();
+                                _this.content = editor.getHTML();
 
-                            // Debounced Scan & Highlight
-                            clearTimeout(_this.timer);
-                            _this.timer = setTimeout(() => {
-                                _this.$dispatch('request-scan');
-                                _this.highlightKnownPeople();
-                            }, delay);
-                        },
-                    });
+                                // Debounced Scan & Highlight
+                                clearTimeout(_this.timer);
+                                _this.timer = setTimeout(() => {
+                                    _this.$dispatch('request-scan');
+                                    _this.highlightKnownPeople();
+                                }, delay);
+                            },
+                        });
 
-                    // Initial highlight
-                    setTimeout(() => this.highlightKnownPeople(), 200);
+                        // Initial highlight
+                        setTimeout(() => this.highlightKnownPeople(), 200);
+                    } catch (e) {
+                        console.error('Tiptap initialization failed:', e);
+                    }
+
 
                     // Sync backend content changes
                     this.$watch('content', (value) => {
-                        const editor = Alpine.raw(this.editor);
-                        if (!editor) return;
+                        if (this.editor) {
+                            const editor = Alpine.raw(this.editor);
+                            const currentHTML = editor.getHTML();
+                            
+                            // Normalize empty content for comparison to prevent unnecessary updates or loops
+                            const val = value || '';
+                            const cur = currentHTML || '';
+                            
+                            if (cur === val) return;
 
-                        const currentHTML = editor.getHTML();
-                        if (currentHTML === value) return;
-
-                        // Only update if not focused to avoid cursor jumps/mismatches during typing
-                        if (!editor.isFocused) {
-                            editor.commands.setContent(value, false);
+                            // Only update if not focused to avoid cursor jumps/mismatches during typing
+                            if (!editor.isFocused) {
+                                editor.commands.setContent(val, false);
+                            }
                         }
                     });
                 },
