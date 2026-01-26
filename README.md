@@ -89,3 +89,4 @@ The `docker-compose.yml` defines the following services:
 
 *   **Manually Sync Immich**: `php artisan app:sync-immich`
 *   **Manually Send Reminders**: `php artisan app:send-inactivity-reminders`
+*   **Reset User Password**: `php artisan user:password-reset {email} {password?}`
