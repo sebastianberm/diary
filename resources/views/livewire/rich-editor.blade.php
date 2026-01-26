@@ -39,22 +39,23 @@
                                 class: 'outline-none h-full',
                             },
                         },
-                        onUpdate({ editor }) {
+                        onUpdate({ editor, transaction }) {
+                            // Prevent infinite loops from programmatic updates (like highlighting)
+                            if (transaction.getMeta('isHighlightUpdate')) return;
+
                             _this.content = editor.getHTML();
 
-                            // Debounced Auto-Scan
+                            // Debounced Scan & Highlight
                             clearTimeout(_this.timer);
                             _this.timer = setTimeout(() => {
                                 _this.$dispatch('request-scan');
+                                _this.highlightKnownPeople(editor);
                             }, delay);
-
-                            // Real-time Highlighting (Local)
-                            _this.highlightKnownPeople(editor);
                         },
                     });
 
                     // Initial highlight
-                    this.highlightKnownPeople(this.editor);
+                    setTimeout(() => this.highlightKnownPeople(this.editor), 200);
 
                     // Sync backend content changes
                     this.$watch('content', (value) => {
@@ -80,40 +81,37 @@
 
                     if (allKeywords.length === 0) return;
 
-                    // Regex for all keywords with word boundaries
                     const regex = new RegExp(`\\b(${allKeywords.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`, 'gi');
 
-                    // We use the Highlight mark that's already configured
-                    // First, clear existing highlights to avoid overlapping/stale ones
-                    // Note: We do this only if not focused to avoid interrupting the user's cursor
-                    // Wait, if it's debounced, it's fine.
-                    
-                    const { from, to } = editor.state.selection;
-                    
-                    // We'll apply the highlight mark to all found ranges
-                    editor.chain().focus()
-                        .unsetHighlight()
-                        .command(({ tr, state }) => {
-                            const { doc } = state;
-                            doc.descendants((node, pos) => {
-                                if (node.isText) {
-                                    let match;
-                                    while ((match = regex.exec(node.text)) !== null) {
-                                        const start = pos + match.index;
-                                        const end = start + match[0].length;
-                                        tr.addMark(start, end, state.schema.marks.highlight.create());
-                                    }
-                                }
-                            });
-                            return true;
-                        })
-                        .setTextSelection({ from, to }) // Restore selection
-                        .run();
+                    const { state, view } = editor;
+                    const { tr } = state;
+                    const { from, to } = state.selection;
+
+                    // Mark this transaction to avoid onUpdate loops
+                    tr.setMeta('isHighlightUpdate', true);
+                    tr.setMeta('addToHistory', false);
+
+                    // Clear existing highlights
+                    tr.removeMark(0, state.doc.content.size, state.schema.marks.highlight);
+
+                    state.doc.descendants((node, pos) => {
+                        if (node.isText) {
+                            let match;
+                            while ((match = regex.exec(node.text)) !== null) {
+                                const start = pos + match.index;
+                                const end = start + match[0].length;
+                                tr.addMark(start, end, state.schema.marks.highlight.create());
+                            }
+                        }
+                    });
+
+                    view.dispatch(tr);
                 }
             }));
         });
     </script>
 
+    <style>
         .ProseMirror mark {
             background-color: #fef08a; /* gold-200 */
             color: inherit;
