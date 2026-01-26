@@ -33,7 +33,7 @@
             @foreach($moods as $mood)
                 <button wire:click="$set('mood_id', {{ $mood->id }})"
                     class="group flex flex-col items-center p-3 rounded-lg transition-all duration-200 
-                                    {{ $mood_id == $mood->id ? 'bg-gold-50 ring-2 ring-gold-500 dark:bg-primary-800' : 'hover:bg-gray-50 dark:hover:bg-primary-800' }}">
+                                        {{ $mood_id == $mood->id ? 'bg-gold-50 ring-2 ring-gold-500 dark:bg-primary-800' : 'hover:bg-gray-50 dark:hover:bg-primary-800' }}">
                     <span
                         class="text-3xl mb-1 transform group-hover:scale-110 transition-transform">{{ $mood->icon }}</span>
                     <span class="text-xs text-gray-600 dark:text-gray-400 font-medium">{{ __($mood->name) }}</span>
