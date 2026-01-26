@@ -72,26 +72,57 @@
                 },
 
                 highlightKnownPeople(editor) {
-                    // Simple text search and highlight
-                    // Note: Ideally this is a custom Tiptap extension, but for quick implementation:
-                    // We can just scan text. Tiptap Highlight extension is manually applied to ranges.
-                    // A proper implementation requires a decoraton or mark extension which matches regex.
+                    if (!editor || !people || people.length === 0) return;
 
-                    // For now, let's rely on the user observing the 'Context Scan' button triggering or
-                    // the detected list updating below.
-                    // If we want IN-EDITOR highlighting, we need to iterate text nodes.
+                    const allKeywords = people.flatMap(p => [p.name, ...(p.keywords || [])])
+                        .filter(k => k && k.trim() !== '')
+                        .map(k => k.trim());
+
+                    if (allKeywords.length === 0) return;
+
+                    // Regex for all keywords with word boundaries
+                    const regex = new RegExp(`\\b(${allKeywords.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`, 'gi');
+
+                    // We use the Highlight mark that's already configured
+                    // First, clear existing highlights to avoid overlapping/stale ones
+                    // Note: We do this only if not focused to avoid interrupting the user's cursor
+                    // Wait, if it's debounced, it's fine.
+                    
+                    const { from, to } = editor.state.selection;
+                    
+                    // We'll apply the highlight mark to all found ranges
+                    editor.chain().focus()
+                        .unsetHighlight()
+                        .command(({ tr, state }) => {
+                            const { doc } = state;
+                            doc.descendants((node, pos) => {
+                                if (node.isText) {
+                                    let match;
+                                    while ((match = regex.exec(node.text)) !== null) {
+                                        const start = pos + match.index;
+                                        const end = start + match[0].length;
+                                        tr.addMark(start, end, state.schema.marks.highlight.create());
+                                    }
+                                }
+                            });
+                            return true;
+                        })
+                        .setTextSelection({ from, to }) // Restore selection
+                        .run();
                 }
             }));
         });
     </script>
 
-    <style>
-        .ProseMirror p.is-editor-empty:first-child::before {
-            color: #adb5bd;
-            content: attr(data-placeholder);
-            float: left;
-            height: 0;
-            pointer-events: none;
+        .ProseMirror mark {
+            background-color: #fef08a; /* gold-200 */
+            color: inherit;
+            border-radius: 0.25rem;
+            padding: 0 0.125rem;
+        }
+        .dark .ProseMirror mark {
+            background-color: #854d0e; /* gold-800 */
+            color: #fef9c3; /* gold-100 */
         }
     </style>
 </div>
