@@ -49,30 +49,31 @@
                             clearTimeout(_this.timer);
                             _this.timer = setTimeout(() => {
                                 _this.$dispatch('request-scan');
-                                _this.highlightKnownPeople(editor);
+                                _this.highlightKnownPeople();
                             }, delay);
                         },
                     });
 
                     // Initial highlight
-                    setTimeout(() => this.highlightKnownPeople(this.editor), 200);
+                    setTimeout(() => this.highlightKnownPeople(), 200);
 
                     // Sync backend content changes
                     this.$watch('content', (value) => {
-                        if (!this.editor) return;
+                        const editor = Alpine.raw(this.editor);
+                        if (!editor) return;
 
-                        const currentHTML = this.editor.getHTML();
+                        const currentHTML = editor.getHTML();
                         if (currentHTML === value) return;
 
                         // Only update if not focused to avoid cursor jumps/mismatches during typing
-                        // Or if the change is significant (not just a minor HTML variation)
-                        if (!this.editor.isFocused) {
-                            this.editor.commands.setContent(value, false);
+                        if (!editor.isFocused) {
+                            editor.commands.setContent(value, false);
                         }
                     });
                 },
 
-                highlightKnownPeople(editor) {
+                highlightKnownPeople() {
+                    const editor = Alpine.raw(this.editor);
                     if (!editor || !people || people.length === 0) return;
 
                     const allKeywords = people.flatMap(p => [p.name, ...(p.keywords || [])])
@@ -83,29 +84,29 @@
 
                     const regex = new RegExp(`\\b(${allKeywords.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})\\b`, 'gi');
 
-                    const { state, view } = editor;
-                    const { tr } = state;
-                    const { from, to } = state.selection;
+                    editor.commands.command(({ tr, state, dispatch }) => {
+                        if (!dispatch) return true;
 
-                    // Mark this transaction to avoid onUpdate loops
-                    tr.setMeta('isHighlightUpdate', true);
-                    tr.setMeta('addToHistory', false);
+                        // Mark this transaction to avoid onUpdate loops
+                        tr.setMeta('isHighlightUpdate', true);
+                        tr.setMeta('addToHistory', false);
 
-                    // Clear existing highlights
-                    tr.removeMark(0, state.doc.content.size, state.schema.marks.highlight);
+                        // Clear existing highlights
+                        tr.removeMark(0, state.doc.content.size, state.schema.marks.highlight);
 
-                    state.doc.descendants((node, pos) => {
-                        if (node.isText) {
-                            let match;
-                            while ((match = regex.exec(node.text)) !== null) {
-                                const start = pos + match.index;
-                                const end = start + match[0].length;
-                                tr.addMark(start, end, state.schema.marks.highlight.create());
+                        state.doc.descendants((node, pos) => {
+                            if (node.isText) {
+                                let match;
+                                while ((match = regex.exec(node.text)) !== null) {
+                                    const start = pos + match.index;
+                                    const end = start + match[0].length;
+                                    tr.addMark(start, end, state.schema.marks.highlight.create());
+                                }
                             }
-                        }
-                    });
+                        });
 
-                    view.dispatch(tr);
+                        return true;
+                    });
                 }
             }));
         });
@@ -113,14 +114,18 @@
 
     <style>
         .ProseMirror mark {
-            background-color: #fef08a; /* gold-200 */
+            background-color: #fef08a;
+            /* gold-200 */
             color: inherit;
             border-radius: 0.25rem;
             padding: 0 0.125rem;
         }
+
         .dark .ProseMirror mark {
-            background-color: #854d0e; /* gold-800 */
-            color: #fef9c3; /* gold-100 */
+            background-color: #854d0e;
+            /* gold-800 */
+            color: #fef9c3;
+            /* gold-100 */
         }
     </style>
 </div>
