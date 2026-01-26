@@ -58,8 +58,16 @@
 
                     // Sync backend content changes
                     this.$watch('content', (value) => {
-                        if (this.editor.getHTML() === value) return;
-                        this.editor.commands.setContent(value, false);
+                        if (!this.editor) return;
+
+                        const currentHTML = this.editor.getHTML();
+                        if (currentHTML === value) return;
+
+                        // Only update if not focused to avoid cursor jumps/mismatches during typing
+                        // Or if the change is significant (not just a minor HTML variation)
+                        if (!this.editor.isFocused) {
+                            this.editor.commands.setContent(value, false);
+                        }
                     });
                 },
 

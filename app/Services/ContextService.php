@@ -28,20 +28,27 @@ class ContextService
         $people = Person::all();
 
         foreach ($people as $person) {
-            // Check Name
-            if (stripos($text, $person->name) !== false) {
-                $detectedIds[] = $person->id;
-                continue;
+            // Check Name - Must not be empty
+            if (!empty(trim($person->name))) {
+                // Use word boundaries for matching names to prevent "Jo" matching "John"
+                $pattern = '/\b' . preg_quote($person->name, '/') . '\b/i';
+                if (preg_match($pattern, $text)) {
+                    $detectedIds[] = $person->id;
+                    continue;
+                }
             }
 
             // Check Keywords (Aliases)
             if ($person->keywords) {
-                // assume keywords are comma separated or array
                 $keywords = is_array($person->keywords) ? $person->keywords : explode(',', $person->keywords);
                 foreach ($keywords as $keyword) {
-                    if (stripos($text, trim($keyword)) !== false) {
-                        $detectedIds[] = $person->id;
-                        break; // Found this person
+                    $trimmed = trim($keyword);
+                    if ($trimmed !== '') {
+                        $pattern = '/\b' . preg_quote($trimmed, '/') . '\b/i';
+                        if (preg_match($pattern, $text)) {
+                            $detectedIds[] = $person->id;
+                            break; // Found this person
+                        }
                     }
                 }
             }
