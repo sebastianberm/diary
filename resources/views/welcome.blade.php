@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>{{ config('app.name', 'My Eternal Diary') }} - Capture Your Moments</title>
+        <title>{{ config('app.name', 'Diary') }} - Capture Your Moments</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,24 +49,20 @@
         <!-- Navigation -->
         <nav class="fixed top-0 w-full z-50 glass shadow-sm">
             <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <div class="w-10 h-10 bg-[#4a3427] rounded-lg flex items-center justify-center shadow-lg">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
-                    </div>
+                <a href="/" class="flex items-center gap-2 group">
+                    <img src="{{ asset('logo.png') }}" alt="{{ config('app.name') }}" class="w-10 h-10 group-hover:scale-110 transition-transform">
                     <span class="text-xl font-bold font-serif tracking-tight">{{ config('app.name', 'Diary') }}</span>
-                </div>
+                </a>
 
-                <div class="hidden md:flex items-center gap-8 text-sm font-medium">
-                    <a href="#features" class="hover:text-[#4a3427] dark:hover:text-[#d4af37] transition-colors">Features</a>
+                <div class="flex items-center gap-4 md:gap-8 text-sm font-medium">
+                    <a href="#features" class="hidden sm:block hover:text-[#4a3427] dark:hover:text-[#d4af37] transition-colors">Features</a>
                     @if (Route::has('login'))
                         @auth
                             <a href="{{ url('/dashboard') }}" class="px-6 py-2.5 bg-[#4a3427] text-white rounded-full hover:bg-[#3d2b20] transition-all shadow-md active:scale-95">Dashboard</a>
                         @else
                             <a href="{{ route('login') }}" class="hover:text-[#4a3427] dark:hover:text-[#d4af37] transition-colors">Log in</a>
                             @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="px-6 py-2.5 bg-[#4a3427] text-white rounded-full hover:bg-[#3d2b20] transition-all shadow-md active:scale-95">Start Writing</a>
+                                <a href="{{ route('register') }}" class="hidden xs:block px-6 py-2.5 bg-[#4a3427] text-white rounded-full hover:bg-[#3d2b20] transition-all shadow-md active:scale-95">Start Writing</a>
                             @endif
                         @endauth
                     @endif
@@ -87,7 +83,7 @@
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#d4af37] opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-[#d4af37]"></span>
                         </span>
-                        <span class="text-xs font-semibold uppercase tracking-wider text-[#4a3427] dark:text-[#d4af37]">Your private space</span>
+                        <span class="text-xs font-semibold uppercase tracking-wider text-[#4a3427] dark:text-[#d4af37]">Your personal space</span>
                     </div>
 
                     <h1 class="text-5xl md:text-7xl font-serif leading-[1.1] text-[#2d241e] dark:text-white">
@@ -96,7 +92,7 @@
 
                     <p class="text-lg text-[#5a4e46] dark:text-[#a09a95] max-w-xl mx-auto lg:mx-0 leading-relaxed">
                         Capture your thoughts, dreams, and memories in a sanctuary built for reflection. 
-                        A beautiful, secure, and personal digital journal designed for you.
+                        A beautiful, intuitive, and personal digital journal designed for your daily life.
                     </p>
 
                     <div class="flex flex-wrap justify-center lg:justify-start gap-4 pt-4">
@@ -122,17 +118,6 @@
                         <!-- Decorative Accents -->
                         <div class="absolute -bottom-10 -right-10 w-48 h-48 bg-[#d4af37]/20 rounded-full blur-2xl -z-10"></div>
                         <div class="absolute -top-10 -left-10 w-32 h-32 bg-[#4a3427]/10 rounded-full blur-xl -z-10"></div>
-                        
-                        <!-- Floating Glass Card -->
-                        <div class="absolute -bottom-6 -left-10 glass p-6 rounded-xl shadow-xl z-20 max-w-[240px] hidden md:block border border-white/50 dark:border-white/10 text-left">
-                            <div class="flex items-center gap-3 mb-2">
-                                <div class="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                                    <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                                </div>
-                                <span class="text-[10px] font-bold uppercase tracking-wide opacity-60">End-to-End Encryption</span>
-                            </div>
-                            <p class="text-[13px] leading-snug font-medium">Your thoughts are yours alone. Always hidden, forever secure.</p>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -146,7 +131,7 @@
                     <p class="text-lg text-[#5a4e46] dark:text-[#a09a95]">Thoughtfully crafted features to help you capture the essence of your life, day by day.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     <!-- Feature 1 -->
                     <div class="p-8 rounded-3xl bg-[#fdfcf9] dark:bg-[#1a1a1a] border border-[#4a3427]/5 hover:shadow-xl transition-all group">
                         <div class="w-14 h-14 bg-amber-50 dark:bg-amber-900/20 rounded-2xl flex items-center justify-center mb-6 text-amber-600 group-hover:scale-110 transition-transform">
@@ -159,19 +144,28 @@
                     <!-- Feature 2 -->
                     <div class="p-8 rounded-3xl bg-[#fdfcf9] dark:bg-[#1a1a1a] border border-[#4a3427]/5 hover:shadow-xl transition-all group">
                         <div class="w-14 h-14 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center mb-6 text-blue-600 group-hover:scale-110 transition-transform">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         </div>
-                        <h3 class="text-xl font-bold mb-3">Privacy First</h3>
-                        <p class="text-[#5a4e46] dark:text-[#8a837e]">Your diary is encrypted and only accessible by you. Your privacy is our highest priority.</p>
+                        <h3 class="text-xl font-bold mb-3">Immich Photos</h3>
+                        <p class="text-[#5a4e46] dark:text-[#8a837e]">Full integration with your Immich library. Easily attach photos and memories to your entries.</p>
                     </div>
 
                     <!-- Feature 3 -->
                     <div class="p-8 rounded-3xl bg-[#fdfcf9] dark:bg-[#1a1a1a] border border-[#4a3427]/5 hover:shadow-xl transition-all group">
                         <div class="w-14 h-14 bg-purple-50 dark:bg-purple-900/20 rounded-2xl flex items-center justify-center mb-6 text-purple-600 group-hover:scale-110 transition-transform">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
                         </div>
-                        <h3 class="text-xl font-bold mb-3">Rich Media</h3>
-                        <p class="text-[#5a4e46] dark:text-[#8a837e]">Bring your memories to life with photos, tags, and custom attributes for every entry.</p>
+                        <h3 class="text-xl font-bold mb-3">Person Tracking</h3>
+                        <p class="text-[#5a4e46] dark:text-[#8a837e]">Keep track of interactions with children and other important people in your life.</p>
+                    </div>
+
+                    <!-- Feature 4 -->
+                    <div class="p-8 rounded-3xl bg-[#fdfcf9] dark:bg-[#1a1a1a] border border-[#4a3427]/5 hover:shadow-xl transition-all group">
+                        <div class="w-14 h-14 bg-green-50 dark:bg-green-900/20 rounded-2xl flex items-center justify-center mb-6 text-green-600 group-hover:scale-110 transition-transform">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 00-2-2m11 12a9 9 0 01-9-9m9 9a9 9 0 009-9m-9 9Hc1.252 0 2.455-.134 3.608-.388m-9.108-.592a8.962 8.962 0 011.374-2.47m9.447-15.448a9.96 9.96 0 010 15.914m-1.374-2.47a8.962 8.962 0 01-1.374 2.47M15 9a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">AI Insights</h3>
+                        <p class="text-[#5a4e46] dark:text-[#8a837e]">Hybrid extraction logic to automatically understand and organize the context of your notes.</p>
                     </div>
                 </div>
             </div>
@@ -197,11 +191,9 @@
 
         <!-- Footer -->
         <footer class="py-12 border-t border-[#4a3427]/5 dark:border-white/5">
-            <div class="max-w-7xl mx-auto px-6 flex flex-col md:row justify-between items-center gap-8">
+            <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
                 <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-[#4a3427] rounded flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    </div>
+                    <img src="{{ asset('logo.png') }}" alt="{{ config('app.name') }}" class="w-8 h-8 opacity-80">
                     <span class="text-lg font-bold font-serif">{{ config('app.name', 'Diary') }}</span>
                     <span class="text-xs text-[#8a837e] ml-2">© {{ date('Y') }} All rights reserved.</span>
                 </div>
